@@ -1,0 +1,4 @@
+Flask==0.10.2
+Jinja2==2.8
+PyYAML==3.11
+markdown==2.6.11

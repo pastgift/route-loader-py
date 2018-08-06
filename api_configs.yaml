@@ -1,0 +1,73 @@
+# Flask app
+app:
+  index:
+    showInDoc: true
+    name     : Flask app index
+    method   : get
+    url      : /
+    response : html
+
+  doPost:
+    showInDoc: true
+    name     : Flask app POST example
+    method   : post
+    url      : /do_post
+    response : json
+    body:
+      data:
+        id:
+          $name      : ID
+          $isRequired: true
+          $type      : int
+          $example   : 1
+        name:
+          $name      : Name
+          $isRequired: true
+          $type      : string
+          $example   : Tom
+        gender:
+          $name      : Gender
+          $type      : enum
+          $in:
+            - Male
+            - Female
+            - Other
+
+# MyModule blueprint
+myModule:
+  index:
+    showInDoc: true
+    name     : MyModule blueprint index
+    method   : get
+    url      : /
+    response : html
+
+  doPost:
+    showInDoc: true
+    name     : MyModule blueprint POST example
+    method   : post
+    url      : /<name>/do_post
+    response : json
+    params:
+      name:
+        $desc: Name
+        $type: string
+    body:
+      data:
+        id:
+          $name      : ID
+          $isRequired: true
+          $type      : int
+          $example   : 1
+        name:
+          $name      : Name
+          $isRequired: true
+          $type      : string
+          $example   : Tom
+        gender:
+          $name      : Gender
+          $type      : enum
+          $in:
+            - Male
+            - Female
+            - Other
