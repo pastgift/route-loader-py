@@ -13,6 +13,11 @@ RouteLoader is an API managing tool for Flask, including：
 
 ```python
 # -*- coding: utf-8 -*-
+try:
+    # Use oyaml to keep the key orders
+    import oyaml as yaml
+except ImportError:
+    import yaml
 
 from flask import Flask, Blueprint, request, render_template, jsonify
 from routeloader import RouteLoader
@@ -20,17 +25,17 @@ from routeloader import RouteLoader
 ##### Init RouteLoader #####
 
 # Load API config file
-API_CONFIGS = {
+ROUTE = yaml.load("""{
   "app": {
     "index": {
-      "showInDoc": True,
+      "showInDoc": true,
       "name"     : "Flask app index",
       "method"   : "get",
       "url"      : "/",
       "response" : "html"
     },
     "doPost": {
-      "showInDoc": True,
+      "showInDoc": true,
       "name"     : "Flask app POST example",
       "method"   : "post",
       "url"      : "/do_post",
@@ -38,8 +43,8 @@ API_CONFIGS = {
       "body": {
         "data": {
           "id": {
-            "$name"      : "ID",
-            "$isRequired": True,
+            "$desc"      : "ID",
+            "$isRequired": true,
             "$type"      : "int",
             "$example"   : 1
           }
@@ -47,19 +52,20 @@ API_CONFIGS = {
       }
     }
   }
-}
-route_loader = RouteLoader(API_CONFIGS)
+}""")
 
 ##### Use RouteLoader on Flask app object #####
+# Init RouteLoader
+route_loader = RouteLoader()
 
 # Flask app object
 app = Flask(__name__)
 
-@route_loader.route(app, 'app.index')
+@route_loader.route(app, ROUTE['app']['index'])
 def index():
     return render_template('index.html')
 
-@route_loader.route(app, 'app.doPost')
+@route_loader.route(app, ROUTE['app']['doPost'])
 def do_post():
     ret = request.get_data(as_text=True)
 
@@ -75,10 +81,10 @@ route_loader.create_doc(app, '/doc')
 
 |                               File                               |   Type  |                            Description                             |
 |------------------------------------------------------------------|---------|--------------------------------------------------------------------|
-| [routeloader.py](routeloader.py)                                 | Core    | RouteLoader core code (Route loader)                               |
+| [routeloader.py](routeloader.py)                                 | Core    | RouteLoader core code (Routeloader)                                |
 | [objectchecker.py](objectchecker.py)                             | Core    | RouteLoader core code (JSON checker)                               |
 | [templates/api_docs.html](templates/api_docs.html)               | Core    | RouteLoader core code (API Document template                       |
-| [api_configs.yaml](api_configs.yaml)                             | Example | API description file in YAML                                       |
+| [route.yaml](route.yaml)                                         | Example | Route file in YAML format                                          |
 | [demo.py](demo.py)                                               | Example | Flask project example code                                         |
 | [my_middlewares.py](my_middlewares.py)                           | Example | Example middlewares for Flask                                      |
 | [my_decorators.py](my_decorators.py)                             | Example | Example decorators for Flask                                       |
