@@ -220,14 +220,19 @@ class RouteLoader(object):
 
     def doc_handler(self):
         routes = filter(lambda r: r.get('config', {}).get('showInDoc') is True, self._ROUTES)
-        return render_template('api_doc.html',
-                doc_rule=self.doc_rule,
-                routes=routes,
-                json=json,
-                flatten_param_config=flatten_param_config,
-                gen_param_sample=gen_param_sample,
-                render_md=render_md,
-                get_md5=get_md5)
+        page_data = {
+            'doc_rule'            : self.doc_rule,
+            'routes'              : routes,
+            'isinstance'          : isinstance,
+            'list'                : list,
+            'tuple'               : tuple,
+            'json'                : json,
+            'flatten_param_config': flatten_param_config,
+            'gen_param_sample'    : gen_param_sample,
+            'render_md'           : render_md,
+            'get_md5'             : get_md5,
+        }
+        return render_template('api_doc.html', **page_data)
 
     def create_doc(self, flask_app_or_blueprint, rule=None):
         if rule is not None:

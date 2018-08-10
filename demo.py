@@ -12,8 +12,8 @@ except ImportError:
 from flask import Flask, Blueprint, request, render_template, jsonify
 
 from routeloader import RouteLoader
-from my_middlewares import check_something, check_something_by_args_factory
-from my_decorators import logged
+from my_middlewares import global_middlewares_1, global_middlewares_2, api_middlewares_1, api_middlewares_2
+from my_decorators import api_decorator_1, api_decorator_2
 
 
 
@@ -30,22 +30,21 @@ with open(basedir + '/route.yaml') as _f:
 ##### Use RouteLoader on Flask app object #####
 # Init RouteLoader
 global_middlewares = [
-    check_something,
+    global_middlewares_1,
+    global_middlewares_2,
 ]
 route_loader = RouteLoader(middlewares=global_middlewares)
 
 # Flask app object
 app = Flask(__name__)
 
-api_middlewares = [
-    check_something_by_args_factory('check', 'ng'),
-]
-@route_loader.route(app, ROUTE['app']['index'], middlewares=api_middlewares)
+@route_loader.route(app, ROUTE['app']['index'])
 def index():
     return render_template('index.html')
 
-@route_loader.route(app, ROUTE['app']['doPost'])
-@logged
+@route_loader.route(app, ROUTE['app']['doPost'], middlewares=[api_middlewares_1, api_middlewares_2])
+@api_decorator_1
+@api_decorator_2
 def do_post():
     ret = request.get_data(as_text=True)
 
@@ -64,7 +63,6 @@ def my_module_index():
     return render_template('my_module_index.html')
 
 @route_loader.route(my_module_bp, ROUTE['myModule']['doPost'])
-@logged
 def my_module_do_post(**kwargs):
     print 1
     body = json.loads(request.get_data(as_text=True))

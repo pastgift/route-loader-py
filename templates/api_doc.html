@@ -1,3 +1,6 @@
+{% set USE_CSS_JS_FONT_RESOURCE_FROM_CDN = True %}
+{% set MAX_DIRECTIVE_VALUE_LENGTH = 20 %}
+
 {% set
   method_class_map = {
     'get'   : 'success',
@@ -20,6 +23,26 @@
     '$skipSQL',
   ]
 %}
+
+{% macro render_css_js_font_resource() %}
+  {% if USE_CSS_JS_FONT_RESOURCE_FROM_CDN %}
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css">
+
+    <script src="//cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/highlight.min.js"></script>
+  {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/highlight-style-default.min.css') }}">
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/highlight.min.js') }}"></script>
+  {% endif %}
+{% endmacro %}
 
 {% macro render_param_table(api_id, route_config, category) %}
   <div class="table-responsive">
@@ -61,15 +84,38 @@
             <td class="text-uppercase mono">{{ param_option['$type'] }}</td>
             <td>
               <span>
-                {{ param_option['$desc'] or '' }}
+                {% for line in param_option.get('$desc', '').split('\n') %}
+                  {{ line }}<br />
+                {% endfor %}
               </span>
+
+              {% for directive, directive_value in param_option.items() %}
+                {% if directive not in none_description_directives %}
+                  {% set directive_value_dump = json.dumps(directive_value, indent=2) %}
+                  <div>
+                    <span class="fa fa-fw fa-minus"></span>
+                    <strong class="text-capitalize">{{ directive.replace('$', '') }} :</strong>
+                    {% if isinstance(directive_value, (tuple, list)) %}
+                      <pre class="plain-text">{{ '\n'.join(directive_value_dump.split('\n')[1:-1]) }}</pre>
+                    {% else %}
+                      {% if directive_value_dump|length > MAX_DIRECTIVE_VALUE_LENGTH %}
+                        <span class="mono" data-toggle="tooltip" data-placement="top" title="{{ directive_value_dump }}">
+                          {{ directive_value_dump[0:MAX_DIRECTIVE_VALUE_LENGTH] + '...' }}
+                        </span>
+                      {% else %}
+                        <span class="mono">{{ directive_value_dump }}</span>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                {% endif %}
+              {% endfor %}
             </td>
             {% if category == 'body' %}
               {% if loop.first %}
                 <td rowspan="100%">
                   <div class="form-group">
                     <textarea class="form-control api-doc-no-break mono"
-                      rows="{{ loop.length * 2 }}"
+                      rows="{{ loop.length * 3 }}"
                       placeholder="Body value"
                       target-api="{{ api_id }}"
                       handler="options"
@@ -182,13 +228,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css">
-
-  <script src="//cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"></script>
-  <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/highlight.min.js"></script>
+  {{ render_css_js_font_resource() }}
 
   <title>API Documents</title>
 
@@ -196,6 +236,8 @@
     * {font-family: "PingFang", "Helvetica Neue", "Helvetica", "STHeitiSC-Light", "Arial", "Hiragino Sans GB", "Hiragino Sans GB W3", "WenQuanYi Micro Hei", sans-serif; -webkit-font-smoothing: antialiased; }
     input, textarea, pre, pre *, .mono {font-family: monospace !important; }
     pre.plain-text {background: none; border: none; padding: 0; }
+    .table td {font-size: 12px; }
+    .nowrap {white-space: nowrap; }
     .api-doc {}
     .api-doc p {font-size: 15px; line-height: 32px; }
     .api-doc pre {font-size: 14px; }

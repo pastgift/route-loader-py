@@ -2,13 +2,26 @@
 
 from flask import request, abort, make_response
 
-def check_something(config):
-    if request.args.get('check_something', None) is not None:
-        abort(make_response('Hit check_something in query, aborted.', 400))
+def global_middlewares_1(config):
+    print('IN global_middlewares_1')
 
-def check_something_by_args_factory(field, value):
-    def check_something_by_args(config):
-        if request.args.get(field, None) == value:
-            abort(make_response('Hit {}={} in query, aborted.'.format(field, value), 400))
+    if request.args.get('abort') == 'global_middlewares_1':
+        abort(make_response('Abort in global_middlewares_1', 400))
 
-    return check_something_by_args
+def global_middlewares_2(config):
+    print('IN global_middlewares_2')
+
+    if request.args.get('abort') == 'global_middlewares_2':
+        abort(make_response('Abort in global_middlewares_2', 400))
+
+def api_middlewares_1(config):
+    print('IN api_middlewares_1')
+
+    if request.args.get('abort') == 'api_middlewares_1':
+        abort(make_response('Abort in api_middlewares_1', 400))
+
+def api_middlewares_2(config):
+    print('IN api_middlewares_2')
+
+    if request.args.get('abort') == 'api_middlewares_2':
+        abort(make_response('Abort in api_middlewares_2', 400))

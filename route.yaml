@@ -59,6 +59,15 @@ app:
     method   : post
     url      : /do_post
     response : json
+    query:
+      abort:
+        $desc: Abort in middleware
+        $type: enum
+        $in:
+          - global_middlewares_1
+          - global_middlewares_2
+          - api_middlewares_1
+          - api_middlewares_2
     body:
       data:
         intField:
@@ -111,6 +120,7 @@ app:
             $type     : string
             $minLength: 3
             $maxLength: 10
+          $example: [str1, str2, str3]
         simpleEnumArrayField:
           $desc     : Simple Enum Array Field
           $minLength: 1
