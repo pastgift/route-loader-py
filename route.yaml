@@ -59,6 +59,17 @@ app:
     method   : post
     url      : /do_post
     response : json
+    headers:
+      X-String-Header:
+        $desc: String Header
+        $type: string
+      X-Enum-Header:
+        $desc: Enum Header
+        $type: enum
+        $in:
+          - enum1
+          - enum2
+          - enum3
     query:
       abort:
         $desc: Abort in middleware

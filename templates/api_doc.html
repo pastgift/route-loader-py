@@ -364,6 +364,12 @@
             {% endif %}
 
             <!-- API Params -->
+            {% if c.headers %}
+              <h3>Headers</h3>
+              {{ render_param_table(api_id, c, 'headers') }}
+            {% endif %}
+
+            <!-- API Params -->
             {% if c.params %}
               <h3>URL Params</h3>
               {{ render_param_table(api_id, c, 'params') }}
