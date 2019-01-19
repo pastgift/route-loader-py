@@ -200,3 +200,14 @@ myModule:
         $desc      : Post Body
         $isRequired: true
         $type      : any
+
+  doPostWithOutBody:
+    showInDoc: true
+    name     : MyModule blueprint POST (with out body) example
+    method   : post
+    url      : /<param_field>/do_post_without_body
+    response : json
+    params:
+      param_field:
+        $desc: Param Field
+        $type: string

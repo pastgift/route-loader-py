@@ -200,11 +200,18 @@ class RouteLoader(object):
 
                     checker = ObjectChecker(default_required=default_required, custom_directives=custom_directives)
 
-                    incomming_body = json.loads(request.get_data(as_text=True))
-                    ret = checker.check(incomming_body, config.get('body'))
-                    if not ret.get('isValid'):
-                        # !! Change check failure response here
-                        abort(make_response(jsonify(ret), 400))
+                    incomming_data = request.get_data(as_text=True)
+                    if incomming_data:
+                        try:
+                            incomming_body = json.loads(incomming_data)
+                        except Exception as e:
+                            ret = 'Invalid JSON string'
+                            abort(make_response(jsonify(ret), 400))
+                        else:
+                            ret = checker.check(incomming_body, config.get('body'))
+                            if not ret.get('isValid'):
+                                # !! Change check failure response here
+                                abort(make_response(jsonify(ret), 400))
 
                 # Run extra checkers
                 if self.middlewares:

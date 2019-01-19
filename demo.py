@@ -64,10 +64,13 @@ def my_module_index():
 
 @route_loader.route(my_module_bp, ROUTE['myModule']['doPost'])
 def my_module_do_post(**kwargs):
-    print 1
     body = json.loads(request.get_data(as_text=True))
     print body
     return jsonify({"param": kwargs, "body": body})
+
+@route_loader.route(my_module_bp, ROUTE['myModule']['doPostWithOutBody'])
+def my_module_do_post_without_body(**kwargs):
+    return jsonify({"param": kwargs})
 
 # Register blueprint
 app.register_blueprint(my_module_bp)
