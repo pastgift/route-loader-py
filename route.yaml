@@ -81,6 +81,13 @@ app:
           - api_middlewares_2
     body:
       data:
+        commaArray:
+          $desc: Comma Array
+          $type: string
+          $commaArrayIn:
+            - enum1
+            - enum2
+            - enum3
         intField:
           $desc      : Integer Field
           $isRequired: true

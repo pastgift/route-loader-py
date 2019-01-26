@@ -20,7 +20,6 @@ def register_directive(key):
 
     return decorator
 
-
 @register_directive('$type')
 def _type(v, t):
     t = t.lower()
@@ -33,6 +32,9 @@ def _type(v, t):
     elif t in ('int', 'integer'):
         return isinstance(v, int)
 
+    elif t in ('bool', 'boolean'):
+        return isinstance(v, bool)
+
     elif t in ('arr', 'array'):
         return isinstance(v, (tuple, list))
 
@@ -43,7 +45,6 @@ def _type(v, t):
         try:
             json.loads(v)
             return True
-
         except:
             return False
 
@@ -106,12 +107,24 @@ def _is_value(v, value):
     return v == value
 
 @register_directive('$in')
-def _in(v, in_range):
-    return v in in_range
+def _in(v, in_options):
+    return v in in_options
+
+@register_directive('$commaArrayIn')
+def _comma_array_in(v, in_options):
+    v = v.split(',')
+
+    in_option_map = dict([(x, True) for x in in_options])
+
+    for elem in v:
+        if not in_option_map.get(elem):
+            return False
+
+    return True
 
 @register_directive('$notIn')
-def _not_in(v, in_range):
-    return v not in in_range
+def _not_in(v, in_options):
+    return v not in in_options
 
 @register_directive('$minLength')
 def _min_length(v, min_length):
@@ -134,10 +147,6 @@ def _max_length(v, max_length):
 
     return len(v) == max_length
 
-@register_directive('$isEmail')
-def _is_email(v, flg):
-    return flg == (re_email.match(v) != None)
-
 @register_directive('$matchRegExp')
 def _match_regexp(v, regexp):
     return (re.match(regexp, str(v)) != None)
@@ -145,6 +154,10 @@ def _match_regexp(v, regexp):
 @register_directive('$notMatchRegExp')
 def _not_match_regexp(v, regexp):
     return (re.match(regexp, str(v)) == None)
+
+@register_directive('$isEmail')
+def _is_email(v, flg):
+    return flg == (re_email.match(v) != None)
 
 # Functional methods
 def create_error_message(e, template):
