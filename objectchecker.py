@@ -23,7 +23,7 @@ def register_directive(key):
 @register_directive('$type')
 def _type(v, t):
     t = t.lower()
-    if t in ('str', 'string'):
+    if t in ('str', 'string', 'commaarray', 'enum'):
         return isinstance(v, (str, unicode))
 
     elif t in ('num', 'number', 'float'):
@@ -243,7 +243,16 @@ class ObjectChecker(object):
                         type_='unexpected',
                         field_name=obj_key)
 
-        for option_key, option in options.items():
+
+        def type_check_first_cmp(x, y):
+            if x[0] == '$type':
+                return -1
+            elif y[0] == '$type':
+                return 1
+
+            return 0
+
+        for option_key, option in sorted(options.items(), type_check_first_cmp):
             has_option = False
             check_func = None
 

@@ -83,7 +83,7 @@ app:
       data:
         commaArray:
           $desc: Comma Array
-          $type: string
+          $type: commaArray
           $commaArrayIn:
             - enum1
             - enum2

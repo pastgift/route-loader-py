@@ -80,7 +80,7 @@ def gen_param_sample(param_config):
                         auto_example = v.get('$in')[0]
                         obj[step] = v.get('$example', auto_example)
 
-                elif _type == 'string':
+                elif _type in ('str', 'string', 'commaArray'):
                     if is_array:
                         auto_example = [
                             v.get('$name') or '{}{}'.format(prev_step, 1),
@@ -125,7 +125,6 @@ def gen_param_sample(param_config):
                     else:
                         obj[step] = v.get('$example', '<Any Value>')
 
-                # elif _type == 'json':
                 else:
                     if is_array:
                         obj.extend([OrderedDict()])
