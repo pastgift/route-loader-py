@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from functools import wraps
+from functools import wraps, cmp_to_key
 
 import re
 import json
@@ -252,7 +252,7 @@ class ObjectChecker(object):
 
             return 0
 
-        for option_key, option in sorted(options.items(), type_check_first_cmp):
+        for option_key, option in sorted(options.items(), key=cmp_to_key(type_check_first_cmp)):
             has_option = False
             check_func = None
 
